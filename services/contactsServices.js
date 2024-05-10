@@ -72,7 +72,12 @@ async function updateContact(contactId, name, email, phone) {
       if (contact.id !== contactId) {
         return { ...contact };
       }
-      return { ...contact, name, email, phone };
+      return {
+        ...contact,
+        name: name !== undefined ? name : contact.name,
+        email: email !== undefined ? email : contact.email,
+        phone: phone !== undefined ? phone : contact.phone,
+      };
     });
 
     await fs.writeFile(contactsPath, JSON.stringify(newData, null, 2));
