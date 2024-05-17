@@ -1,5 +1,5 @@
 import contactsService from "../services/contactsServices.js";
-export const getAllContacts = async (req, res) => {
+export const getAllContacts = (req, res) => {
   contactsService
     .listContacts()
     .then((contacts) => res.status(200).json(contacts))
@@ -8,15 +8,18 @@ export const getAllContacts = async (req, res) => {
 
 export const getOneContact = (req, res) => {
   const { id } = req.params;
+
   contactsService
     .getContactById(id)
     .then((contact) => {
-      if (contact == null) {
-        res.status(404).json({ message: "Contact not found" });
+      if (contact === null) {
+        return res.status(404).json({ message: "Contact not found" });
       }
       res.status(200).json(contact);
     })
-    .catch((err) => res.status(500).json("Internal Server Error"));
+    .catch((err) => {
+      res.status(500).json("Internal Server Error");
+    });
 };
 
 export const deleteContact = (req, res) => {
@@ -25,7 +28,7 @@ export const deleteContact = (req, res) => {
     .removeContact(id)
     .then((contact) => {
       if (contact == null) {
-        res.status(404).json({ message: "Contact not found" });
+        return res.status(404).json({ message: "Contact not found" });
       }
       res.status(204);
     })
@@ -46,11 +49,17 @@ export const updateContact = (req, res) => {
   const { id } = req.params;
   const { name, email, phone, favortie } = req.body;
 
+  if (name === undefined && email === undefined && phone === undefined) {
+    return res
+      .status(400)
+      .json({ message: "Body must have at least one field" });
+  }
+
   contactsService
     .updateContact(id, favortie, name, email, phone)
     .then((contact) => {
       if (contact == null) {
-        res.status(404).json({ message: "Contact not found" });
+        return res.status(404).json({ message: "Contact not found" });
       }
       res.status(201).json(contact);
     })
@@ -64,7 +73,7 @@ export const updateContactFavorite = (req, res) => {
     .updateContactFavorite(id, favorite)
     .then((contact) => {
       if (contact == null) {
-        res.status(404).json({ message: "Not found" });
+        return res.status(404).json({ message: "Not found" });
       }
       res.status(200).json(contact);
     })

@@ -10,10 +10,12 @@ async function listContacts() {
 
 async function getContactById(contactId) {
   try {
-    const data = await Contact.findById(contactId);
-    return data;
+    const data = await listContacts();
+
+    const contact = data.find((contact) => contact.id === contactId);
+    return contact || null;
   } catch (error) {
-    next(error);
+    console.log(error);
   }
 }
 
