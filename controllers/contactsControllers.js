@@ -1,14 +1,17 @@
+import { isValidObjectId } from "mongoose";
 import contactsService from "../services/contactsServices.js";
-export const getAllContacts = (req, res) => {
+export const getAllContacts = async (req, res) => {
   contactsService
     .listContacts()
     .then((contacts) => res.status(200).json(contacts))
     .catch((err) => res.status(500).json("Internal Server Error"));
 };
 
-export const getOneContact = (req, res) => {
+export const getOneContact = async (req, res) => {
   const { id } = req.params;
-
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ message: "This identifier is not valid" });
+  }
   contactsService
     .getContactById(id)
     .then((contact) => {
@@ -22,20 +25,23 @@ export const getOneContact = (req, res) => {
     });
 };
 
-export const deleteContact = (req, res) => {
+export const deleteContact = async (req, res) => {
   const { id } = req.params;
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ message: "This identifier is not valid" });
+  }
   contactsService
     .removeContact(id)
     .then((contact) => {
       if (contact == null) {
-        return res.status(404).json({ message: "Contact not found" });
+        return res.status(404).json({ message: "Not found" });
       }
-      res.status(204);
+      res.status(200).json(contact);
     })
     .catch((err) => res.status(500).json("Internal Server Error"));
 };
 
-export const createContact = (req, res) => {
+export const createContact = async (req, res) => {
   const { name, email, phone, favortie } = req.body;
   contactsService
     .addContact(name, email, phone, favortie)
@@ -45,8 +51,11 @@ export const createContact = (req, res) => {
     .catch((err) => res.status(500).json("Internal Server Error"));
 };
 
-export const updateContact = (req, res) => {
+export const updateContact = async (req, res) => {
   const { id } = req.params;
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ message: "This identifier is not valid" });
+  }
   const { name, email, phone, favortie } = req.body;
 
   if (name === undefined && email === undefined && phone === undefined) {
@@ -61,16 +70,19 @@ export const updateContact = (req, res) => {
       if (contact == null) {
         return res.status(404).json({ message: "Contact not found" });
       }
-      res.status(201).json(contact);
+      res.status(200).json(contact);
     })
     .catch((err) => res.status(500).json("Internal Server Error"));
 };
 
-export const updateContactFavorite = (req, res) => {
+export const updateContactFavorite = async (req, res) => {
   const { id } = req.params;
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ message: "This identifier is not valid" });
+  }
   const { favorite } = req.body;
   contactsService
-    .updateContactFavorite(id, favorite)
+    .updateContact(id, favorite)
     .then((contact) => {
       if (contact == null) {
         return res.status(404).json({ message: "Not found" });

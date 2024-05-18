@@ -10,10 +10,8 @@ async function listContacts() {
 
 async function getContactById(contactId) {
   try {
-    const data = await listContacts();
-
-    const contact = data.find((contact) => contact.id === contactId);
-    return contact || null;
+    const contact = await Contact.findById(contactId);
+    return contact;
   } catch (error) {
     console.log(error);
   }
@@ -46,8 +44,7 @@ async function addContact(name, email, phone, favorite = false) {
 }
 
 async function updateContact(contactId, favorite, name, email, phone) {
-  const currentContact = await getContactById(contactId);
-
+  const currentContact = await Contact.findById(contactId);
   if (currentContact == null) {
     return null;
   }
@@ -69,20 +66,10 @@ async function updateContact(contactId, favorite, name, email, phone) {
   }
 }
 
-async function updateContactFavorite(id, favoriteStatus) {
-  try {
-    const result = await updateContact(id, favoriteStatus);
-    return result;
-  } catch (error) {
-    next(error);
-  }
-}
-
 export default {
   listContacts,
   getContactById,
   removeContact,
   addContact,
   updateContact,
-  updateContactFavorite,
 };
