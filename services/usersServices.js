@@ -33,9 +33,13 @@ const loginUser = async (email, password) => {
       return null;
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email, subscription: user.subscription },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     await User.findByIdAndUpdate(user._id, { token });
 
@@ -46,8 +50,16 @@ const logoutUser = async (id) => {
   await User.findByIdAndUpdate(id, { token: null });
 };
 
+const currentUser = (authorizationHeader) => {
+  const token = authorizationHeader.split(" ")[1];
+
+  const { subscription, email } = jwt.decode(token);
+  return { email, subscription };
+};
+
 export default {
   registerUser,
   loginUser,
   logoutUser,
+  currentUser,
 };

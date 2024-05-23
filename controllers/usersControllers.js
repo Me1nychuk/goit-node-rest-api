@@ -55,4 +55,16 @@ export const logout = async (req, res, next) => {
   }
 };
 
-export default { register, login, logout };
+export const current = async (req, res, next) => {
+  try {
+    const authorizationHeader = req.headers.authorization;
+
+    const result = usersService.currentUser(authorizationHeader);
+
+    return res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, logout, current };
