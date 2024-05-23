@@ -47,7 +47,7 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    await usersService.logoutUser(req.body.id);
+    await usersService.logoutUser(req.user.id);
 
     return res.status(204).end();
   } catch (error) {

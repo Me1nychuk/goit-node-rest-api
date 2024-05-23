@@ -1,57 +1,55 @@
 import { isValidObjectId } from "mongoose";
 import contactsService from "../services/contactsServices.js";
-export const getAllContacts = async (req, res) => {
+export const getAllContacts = async (req, res, next) => {
   contactsService
-    .listContacts()
+    .listContacts(req.user.id)
     .then((contacts) => res.status(200).json(contacts))
-    .catch((err) => res.status(500).json("Internal Server Error"));
+    .catch((err) => next(err));
 };
 
-export const getOneContact = async (req, res) => {
+export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
     return res.status(404).json({ message: "This identifier is not valid" });
   }
   contactsService
-    .getContactById(id)
+    .getContactById(id, req.user.id)
     .then((contact) => {
       if (contact === null) {
         return res.status(404).json({ message: "Contact not found" });
       }
       res.status(200).json(contact);
     })
-    .catch((err) => {
-      res.status(500).json("Internal Server Error");
-    });
+    .catch((err) => next(err));
 };
 
-export const deleteContact = async (req, res) => {
+export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
     return res.status(404).json({ message: "This identifier is not valid" });
   }
   contactsService
-    .removeContact(id)
+    .removeContact(id, req.user.id)
     .then((contact) => {
       if (contact == null) {
         return res.status(404).json({ message: "Not found" });
       }
       res.status(200).json(contact);
     })
-    .catch((err) => res.status(500).json("Internal Server Error"));
+    .catch((err) => next(err));
 };
 
-export const createContact = async (req, res) => {
+export const createContact = async (req, res, next) => {
   const { name, email, phone, favortie } = req.body;
   contactsService
-    .addContact(name, email, phone, favortie)
+    .addContact(req.user.id, name, email, phone, favortie)
     .then((contact) => {
       res.status(201).json(contact);
     })
-    .catch((err) => res.status(500).json("Internal Server Error"));
+    .catch((err) => next(err));
 };
 
-export const updateContact = async (req, res) => {
+export const updateContact = async (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
     return res.status(404).json({ message: "This identifier is not valid" });
@@ -65,29 +63,29 @@ export const updateContact = async (req, res) => {
   }
 
   contactsService
-    .updateContact(id, favortie, name, email, phone)
+    .updateContact(id, req.user.id, favortie, name, email, phone)
     .then((contact) => {
       if (contact == null) {
         return res.status(404).json({ message: "Contact not found" });
       }
       res.status(200).json(contact);
     })
-    .catch((err) => res.status(500).json("Internal Server Error"));
+    .catch((err) => next(err));
 };
 
-export const updateContactFavorite = async (req, res) => {
+export const updateContactFavorite = async (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
     return res.status(404).json({ message: "This identifier is not valid" });
   }
   const { favorite } = req.body;
   contactsService
-    .updateContact(id, favorite)
+    .updateContact(id, req.user.id, favorite)
     .then((contact) => {
       if (contact == null) {
         return res.status(404).json({ message: "Not found" });
       }
       res.status(200).json(contact);
     })
-    .catch((err) => res.status(500).json("Internal Server Error"));
+    .catch((err) => next(err));
 };

@@ -39,6 +39,7 @@ contactsRouter.put(
 
 contactsRouter.patch(
   "/:id/favorite",
+  authMiddleware,
   validateBody(updateContactFavoriteSchema),
   updateContactFavorite
 );
