@@ -45,8 +45,14 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const logout = (req, res) => {
-  res.status(200).send({ message: "Logout" });
+export const logout = async (req, res, next) => {
+  try {
+    await usersService.logoutUser(req.body.id);
+
+    return res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
 };
 
 export default { register, login, logout };

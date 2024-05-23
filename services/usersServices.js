@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const registerUser = async (credentials) => {
   try {
@@ -28,15 +29,21 @@ const loginUser = async (email, password) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    if (isMatch === false) {
       return null;
     }
 
-    return { token: "token", user };
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    await User.findByIdAndUpdate(user._id, { token });
+
+    return { token, user };
   } catch (error) {}
 };
-const logoutUser = async (credentials) => {
-  return "token bye bye bye";
+const logoutUser = async (id) => {
+  await User.findByIdAndUpdate(id, { token: null });
 };
 
 export default {
