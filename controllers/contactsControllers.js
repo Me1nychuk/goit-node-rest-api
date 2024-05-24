@@ -1,9 +1,29 @@
 import { isValidObjectId } from "mongoose";
 import contactsService from "../services/contactsServices.js";
 export const getAllContacts = async (req, res, next) => {
+  let { page = 1, limit = 20, favorite } = req.query;
+
+  page = parseInt(page, 10);
+  limit = parseInt(limit, 10);
+  const filter = {
+    owner: req.user.id,
+  };
+
+  if (favorite === "true") {
+    filter.favorite = true;
+  } else if (favorite === "false") {
+    filter.favorite = false;
+  }
+
+  if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
+    return res.status(400).json({ message: "Bad request." });
+  }
+
   contactsService
-    .listContacts(req.user.id)
-    .then((contacts) => res.status(200).json(contacts))
+    .listContacts(filter, page, limit)
+    .then((data) => {
+      res.status(200).json(data);
+    })
     .catch((err) => next(err));
 };
 
@@ -40,9 +60,9 @@ export const deleteContact = async (req, res, next) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const { name, email, phone, favortie } = req.body;
+  const { name, email, phone, favorite = false } = req.body;
   contactsService
-    .addContact(req.user.id, name, email, phone, favortie)
+    .addContact(req.user.id, name, email, phone, favorite)
     .then((contact) => {
       res.status(201).json(contact);
     })
