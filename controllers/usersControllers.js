@@ -67,4 +67,17 @@ export const current = async (req, res, next) => {
   }
 };
 
-export default { register, login, logout, current };
+export const updateSubscription = async (req, res, next) => {
+  try {
+    const subscription = req.body.subscription;
+    const id = req.user.id;
+
+    const result = await usersService.updateSubscriptionUser(id, subscription);
+
+    return res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, logout, current, updateSubscription };

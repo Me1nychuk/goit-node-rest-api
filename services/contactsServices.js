@@ -74,7 +74,6 @@ async function updateContact(contactId, ownerId, favorite, name, email, phone) {
     const result = await Contact.findByIdAndUpdate(contactId, newData, {
       new: true,
     });
-    console.log(result);
     return result;
   } catch (error) {
     next(error);

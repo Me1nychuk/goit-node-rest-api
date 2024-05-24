@@ -57,9 +57,23 @@ const currentUser = (authorizationHeader) => {
   return { email, subscription };
 };
 
+const updateSubscriptionUser = async (id, subscription) => {
+  try {
+    const data = await User.findByIdAndUpdate(
+      id,
+      { subscription },
+      {
+        new: true,
+      }
+    );
+    return data;
+  } catch (error) {}
+};
+
 export default {
   registerUser,
   loginUser,
   logoutUser,
   currentUser,
+  updateSubscriptionUser,
 };
