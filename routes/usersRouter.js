@@ -19,7 +19,7 @@ router.post(
   AuthController.register
 );
 router.post("/login", validateBody(loginUserSchema), AuthController.login);
-router.get("/logout", authMiddleware, AuthController.logout);
+router.post("/logout", authMiddleware, AuthController.logout);
 router.get("/current", authMiddleware, AuthController.current);
 router.patch(
   "/",
