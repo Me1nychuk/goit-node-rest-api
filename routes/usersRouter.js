@@ -10,6 +10,7 @@ import {
 } from "../schemas/usersSchemas.js";
 
 import authMiddleware from "../middlewares/auth.js";
+import uploadMiddleware from "../middlewares/upload.js";
 
 const router = express.Router();
 
@@ -26,6 +27,14 @@ router.patch(
   authMiddleware,
   validateBody(updateSubscriptionSchema),
   AuthController.updateSubscription
+);
+
+router.get("/avatars", authMiddleware, AuthController.avatar);
+router.patch(
+  "/avatars",
+  authMiddleware,
+  uploadMiddleware.single("avatar"),
+  AuthController.updateAvatar
 );
 
 export default router;

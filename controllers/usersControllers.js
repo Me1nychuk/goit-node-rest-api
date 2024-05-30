@@ -1,4 +1,7 @@
 import usersService from "../services/usersServices.js";
+import * as fs from "fs/promises";
+import path from "node:path";
+import Jimp from "jimp";
 
 export const register = async (req, res, next) => {
   try {
@@ -80,4 +83,64 @@ export const updateSubscription = async (req, res, next) => {
   }
 };
 
-export default { register, login, logout, current, updateSubscription };
+export const avatar = async (req, res, next) => {
+  const id = req.user.id;
+
+  try {
+    const userAvatarFilePath = await usersService.getUserAvatar(id);
+
+    const isStatic = await fs
+      .access(userAvatarFilePath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (isStatic) {
+      return res
+        .status(200)
+        .send({ avatarURL: "/avatars/" + userAvatarFilePath });
+    } else {
+      return res.status(200).send({ avatarURL: userAvatarFilePath });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const id = req.user.id;
+    console.log(id);
+
+    await fs.rename(
+      req.file.path,
+      path.resolve("public", "avatars", req.file.filename)
+    );
+
+    Jimp.read(
+      path.resolve("public", "avatars", req.file.filename),
+      (err, avatar) => {
+        if (err) throw err;
+        avatar
+          .resize(256, 256)
+          .quality(60)
+          .greyscale()
+          .write(path.resolve("public", "avatars", req.file.filename));
+      }
+    );
+    const respond = await usersService.updateUserAvatar(id, req.file.filename);
+
+    return res.status(200).send({ avatarURL: respond.avatarURL });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  register,
+  login,
+  logout,
+  current,
+  updateSubscription,
+  avatar,
+  updateAvatar,
+};
