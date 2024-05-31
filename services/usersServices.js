@@ -89,7 +89,7 @@ const updateUserAvatar = async (id, filename) => {
         new: true,
       }
     );
-    return data;
+    return data.avatarURL;
   } catch (error) {}
 };
 

@@ -109,7 +109,6 @@ export const avatar = async (req, res, next) => {
 export const updateAvatar = async (req, res, next) => {
   try {
     const id = req.user.id;
-    console.log(id);
 
     await fs.rename(
       req.file.path,
@@ -127,9 +126,12 @@ export const updateAvatar = async (req, res, next) => {
           .write(path.resolve("public", "avatars", req.file.filename));
       }
     );
-    const respond = await usersService.updateUserAvatar(id, req.file.filename);
+    const avatarURL = await usersService.updateUserAvatar(
+      id,
+      req.file.filename
+    );
 
-    return res.status(200).send({ avatarURL: respond.avatarURL });
+    return res.status(200).send({ avatarURL });
   } catch (error) {
     next(error);
   }
