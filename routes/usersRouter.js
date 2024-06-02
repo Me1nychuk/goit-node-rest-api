@@ -34,6 +34,14 @@ router.patch(
   "/avatars",
   authMiddleware,
   uploadMiddleware.single("avatar"),
+  (req, res, next) => {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "The file was not transferred.",
+      });
+    }
+    next();
+  },
   AuthController.updateAvatar
 );
 

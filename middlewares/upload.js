@@ -16,4 +16,12 @@ const storage = multer.diskStorage({
   },
 });
 
-export default multer({ storage });
+export default multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (!file) {
+      return cb(new Error("The file is missing."));
+    }
+    cb(null, true);
+  },
+});

@@ -109,7 +109,6 @@ export const avatar = async (req, res, next) => {
 export const updateAvatar = async (req, res, next) => {
   try {
     const id = req.user.id;
-
     await fs.rename(
       req.file.path,
       path.resolve("public", "avatars", req.file.filename)
@@ -122,7 +121,6 @@ export const updateAvatar = async (req, res, next) => {
         avatar
           .resize(256, 256)
           .quality(60)
-          .greyscale()
           .write(path.resolve("public", "avatars", req.file.filename));
       }
     );

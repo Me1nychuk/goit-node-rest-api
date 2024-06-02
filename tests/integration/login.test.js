@@ -22,7 +22,7 @@ describe("Login", () => {
     await mongoose.disconnect();
   });
 
-  test("Test №1 |Login must be succesful|", async () => {
+  test("Test №1 | Login must be succesful |", async () => {
     const response = await supertest(app).post("/api/users/login").send({
       password: "123456789",
       email: "poshta@gmail.com",
@@ -32,7 +32,7 @@ describe("Login", () => {
     expect(response.body.user.email).toBe("poshta@gmail.com");
   });
 
-  test("Test №2 |Login must be unsuccessful|", async () => {
+  test("Test №2 | Login must be unsuccessful |", async () => {
     const response = await supertest(app).post("/api/users/login").send({
       password: "12345678",
       email: "poshta@gmail.com",

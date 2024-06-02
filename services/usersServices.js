@@ -84,7 +84,7 @@ const updateUserAvatar = async (id, filename) => {
   try {
     const data = await User.findByIdAndUpdate(
       id,
-      { avatarURL: filename },
+      { avatarURL: "/avatars/" + filename },
       {
         new: true,
       }
