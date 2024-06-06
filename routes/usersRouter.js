@@ -7,6 +7,7 @@ import {
   createUserSchema,
   loginUserSchema,
   updateSubscriptionSchema,
+  VerificationEmailSchema,
 } from "../schemas/usersSchemas.js";
 
 import authMiddleware from "../middlewares/auth.js";
@@ -43,6 +44,13 @@ router.patch(
     next();
   },
   AuthController.updateAvatar
+);
+
+router.get("/verify/:verificationToken", AuthController.verifyEmail);
+router.post(
+  "/verify/",
+  validateBody(VerificationEmailSchema),
+  AuthController.sendVerificationEmail
 );
 
 export default router;

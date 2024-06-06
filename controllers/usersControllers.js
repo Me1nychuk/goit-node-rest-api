@@ -35,6 +35,9 @@ export const login = async (req, res, next) => {
     if (result === null) {
       return res.status(401).send({ message: "Email or password is wrong" });
     }
+    if (result === false) {
+      return res.status(401).send({ message: "Please verify your email" });
+    }
 
     return res.status(200).send({
       token: result.token,
@@ -135,6 +138,34 @@ export const updateAvatar = async (req, res, next) => {
   }
 };
 
+export const verifyEmail = async (req, res, next) => {
+  try {
+    const { verificationToken } = req.params;
+    const result = await usersService.verifyUser(verificationToken);
+    if (result == null) {
+      res.status(404).send({ message: "User not found" });
+    }
+
+    res.status(200).send({ message: "Email confirm successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendVerificationEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const result = await usersService.sendVerificationEmail(email);
+    if (result == true) {
+      res.status(400).send({ message: "Verification has already been passed" });
+    }
+    if (result == null) {
+      res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).send({ message: "Verification email sent" });
+  } catch (error) {}
+};
+
 export default {
   register,
   login,
@@ -143,4 +174,6 @@ export default {
   updateSubscription,
   avatar,
   updateAvatar,
+  verifyEmail,
+  sendVerificationEmail,
 };
